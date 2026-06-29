@@ -274,6 +274,7 @@ while ( have_posts() ) :
                         <?php esc_html_e( 'Ajouter au panier', 'awa-child' ); ?>
                     </button>
                 </form>
+                <div class="woocommerce-notices-wrapper awa-pdetail__notice-inline"></div>
             </div>
         <?php endif; ?>
 
@@ -281,21 +282,34 @@ while ( have_posts() ) :
 
     <script>
     (function () {
-        /* ── Rediriger les notices WooCommerce vers le wrapper inline ── */
-        var inlineWrapper = document.querySelector('.awa-pdetail__notice-inline');
-        if (inlineWrapper && window.jQuery) {
-            jQuery(document.body).on('added_to_cart wc_fragments_refreshed', function () {
-                /* Si WooCommerce a injecté dans un autre wrapper, déplacer ici */
-                document.querySelectorAll('.woocommerce-notices-wrapper').forEach(function (w) {
-                    if (w !== inlineWrapper && w.innerHTML.trim() !== '') {
-                        inlineWrapper.innerHTML = w.innerHTML;
-                        w.innerHTML = '';
-                    }
-                });
-                /* Scroll doux vers la notice */
-                if (inlineWrapper.innerHTML.trim() !== '') {
-                    inlineWrapper.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        /* ── Rediriger les notices WooCommerce vers le wrapper inline visible sous le bouton Ajouter ── */
+        function getVisibleInlineWrapper() {
+            var wrappers = document.querySelectorAll('.awa-pdetail__notice-inline');
+            for (var i = 0; i < wrappers.length; i++) {
+                if (wrappers[i].offsetParent !== null) return wrappers[i];
+            }
+            return wrappers.length ? wrappers[0] : null;
+        }
+        function moveNoticesToInline() {
+            var inlineWrapper = getVisibleInlineWrapper();
+            if (!inlineWrapper) return;
+            var moved = false;
+            document.querySelectorAll('.woocommerce-notices-wrapper').forEach(function (w) {
+                if (!w.classList.contains('awa-pdetail__notice-inline') && w.innerHTML.trim() !== '') {
+                    inlineWrapper.innerHTML = w.innerHTML;
+                    w.innerHTML = '';
+                    moved = true;
                 }
+            });
+            if (moved && inlineWrapper.innerHTML.trim() !== '') {
+                inlineWrapper.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        }
+        /* Dès le chargement + après chaque ajout AJAX */
+        moveNoticesToInline();
+        if (window.jQuery) {
+            jQuery(document.body).on('added_to_cart wc_fragments_refreshed', function () {
+                setTimeout(moveNoticesToInline, 50);
             });
         }
 

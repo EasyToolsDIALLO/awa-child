@@ -8,6 +8,170 @@
 
 defined( 'ABSPATH' ) || exit;
 
+/* ── Page d'options — Contenu Accueil ──────────────────────── */
+require_once get_stylesheet_directory() . '/inc/homepage-options.php';
+
+/* ── Modal compte client ────────────────────────────────────
+ *
+ * Injecte la modal HTML dans le footer pour les visiteurs non connectés.
+ * Le formulaire utilise les templates WooCommerce natifs (form-login.php)
+ * pour rester compatible avec tous les hooks WC (woocommerce_created_customer, etc.).
+ *
+ * ─────────────────────────────────────────────────────────── */
+
+/**
+ * Rendu de la modal dans le footer (visiteurs non connectés uniquement).
+ * Le JS dans inc/account-modal.js intercepte le clic sur l'icône pour l'ouvrir.
+ */
+function awa_account_modal_footer() {
+    if ( is_user_logged_in() ) {
+        return;
+    }
+    if ( ! function_exists( 'wc_get_template' ) ) {
+        return;
+    }
+
+    $account_url = get_permalink( get_option( 'woocommerce_myaccount_page_id' ) );
+    ?>
+    <!-- ── Modal Compte Client AwA ────────────────────────── -->
+    <div id="awa-account-modal"
+         class="awa-account-modal"
+         role="dialog"
+         aria-modal="true"
+         aria-labelledby="awa-modal-title"
+         hidden>
+
+        <!-- Fond semi-transparent — clic ferme la modal -->
+        <div class="awa-account-modal__overlay" id="awa-modal-overlay"></div>
+
+        <!-- Boîte de dialog -->
+        <div class="awa-account-modal__box" tabindex="-1">
+
+            <!-- Entête -->
+            <div class="awa-account-modal__head">
+                <div class="awa-account-modal__brand">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    <span id="awa-modal-title">Mon compte</span>
+                </div>
+                <button type="button"
+                        class="awa-account-modal__close"
+                        id="awa-modal-close"
+                        aria-label="<?php esc_attr_e( 'Fermer la fenêtre', 'awa-child' ); ?>">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                </button>
+            </div>
+
+            <!-- Onglets : Se connecter / Créer un compte -->
+            <div class="awa-account-modal__tabs" role="tablist">
+                <button type="button"
+                        class="awa-account-modal__tab is-active"
+                        id="awa-tab-login"
+                        role="tab"
+                        aria-controls="awa-panel-login"
+                        aria-selected="true">
+                    <?php esc_html_e( 'Se connecter', 'awa-child' ); ?>
+                </button>
+                <button type="button"
+                        class="awa-account-modal__tab"
+                        id="awa-tab-register"
+                        role="tab"
+                        aria-controls="awa-panel-register"
+                        aria-selected="false">
+                    <?php esc_html_e( 'Créer un compte', 'awa-child' ); ?>
+                </button>
+            </div>
+
+            <!-- Corps : formulaires WooCommerce natifs -->
+            <div class="awa-account-modal__body" id="awa-panel-login">
+                <?php
+                /**
+                 * wc_get_template('myaccount/form-login.php') génère les deux
+                 * formulaires : .woocommerce-form-login et .woocommerce-form-register.
+                 * Le JS dans account-modal.js les sépare en onglets.
+                 * Le redirect ramène vers la page Mon Compte après connexion.
+                 */
+                wc_get_template(
+                    'myaccount/form-login.php',
+                    array( 'redirect' => $account_url )
+                );
+                ?>
+            </div>
+
+        </div><!-- /.awa-account-modal__box -->
+    </div><!-- /#awa-account-modal -->
+    <?php
+}
+add_action( 'wp_footer', 'awa_account_modal_footer', 5 );
+
+/**
+ * Enqueue du script account-modal.js pour les visiteurs non connectés.
+ * Chargé en footer (true), sans dépendance jQuery.
+ */
+add_action( 'wp_enqueue_scripts', function () {
+    if ( is_user_logged_in() ) {
+        return;
+    }
+    wp_enqueue_script(
+        'awa-account-modal',
+        get_stylesheet_directory_uri() . '/inc/account-modal.js',
+        array(),
+        '1.0.0',
+        true
+    );
+} );
+
+/**
+ * Enqueue du script reviews-slider.js sur la page d'accueil.
+ */
+add_action( 'wp_enqueue_scripts', function () {
+    if ( ! is_front_page() ) {
+        return;
+    }
+    wp_enqueue_script(
+        'awa-reviews-slider',
+        get_stylesheet_directory_uri() . '/inc/reviews-slider.js',
+        array(),
+        '1.0.0',
+        true
+    );
+} );
+
+/* ── Supprime la sidebar Storefront sur les pages Compte ─────
+ *
+ * Storefront hoooke storefront_after_content sur l'action WC
+ * woocommerce_after_main_content. Cette fonction ferme le div #primary
+ * ET déclenche do_action('storefront_sidebar') → get_sidebar() →
+ * widgets WordPress (Recherche, Articles récents, Commentaires, etc.).
+ *
+ * On retire ces trois hooks pour avoir une page compte propre.
+ * ─────────────────────────────────────────────────────────── */
+add_action( 'wp', function () {
+    if ( ! function_exists( 'is_account_page' ) || ! is_account_page() ) {
+        return;
+    }
+
+    /* Retire le wrapper <div id="primary"> ajouté par Storefront via WC */
+    remove_action( 'woocommerce_before_main_content', 'storefront_before_content', 10 );
+
+    /* Retire la fermeture du wrapper ET l'appel à storefront_sidebar */
+    remove_action( 'woocommerce_after_main_content', 'storefront_after_content', 10 );
+
+    /* Sécurité : retire get_sidebar() si storefront_sidebar se déclenche quand même */
+    remove_action( 'storefront_sidebar', 'storefront_get_sidebar', 10 );
+} );
+
+/**
+ * Récupère une option de la page d'accueil avec valeur par défaut.
+ *
+ * @param string $key     Clé sans le préfixe 'awa_home_'.
+ * @param string $default Valeur par défaut si l'option est vide.
+ * @return string
+ */
+function awa_opt( $key, $default = '' ) {
+    $val = get_option( 'awa_home_' . $key, '' );
+    return ( '' !== $val && false !== $val ) ? $val : $default;
+}
+
 /**
  * Force les templates WooCommerce classiques (cart.php, form-checkout.php)
  * au lieu des Gutenberg Blocks qui ignorent nos overrides de templates.
@@ -287,10 +451,142 @@ add_action(
     function () {
         add_theme_support( 'post-thumbnails' );
         add_theme_support( 'woocommerce' );
+        add_theme_support(
+            'custom-logo',
+            array(
+                'height'      => 80,
+                'width'       => 200,
+                'flex-height' => true,
+                'flex-width'  => true,
+                'header-text' => array( 'site-title' ),
+            )
+        );
     }
 );
 
 add_filter( 'woocommerce_enqueue_styles', '__return_empty_array' );
+
+/* ── Custom Post Type : Témoignages (avis clients) ────────── */
+add_action( 'init', function () {
+    register_post_type(
+        'awa_testimonial',
+        array(
+            'labels' => array(
+                'name'               => 'Témoignages',
+                'singular_name'      => 'Témoignage',
+                'add_new'            => 'Ajouter un témoignage',
+                'add_new_item'       => 'Ajouter un témoignage',
+                'edit_item'          => 'Modifier le témoignage',
+                'new_item'           => 'Nouveau témoignage',
+                'view_item'          => 'Voir le témoignage',
+                'search_items'       => 'Rechercher un témoignage',
+                'not_found'          => 'Aucun témoignage',
+                'not_found_in_trash' => 'Aucun témoignage dans la corbeille',
+                'menu_name'          => 'Témoignages',
+            ),
+            'public'       => false,
+            'show_ui'      => true,
+            'show_in_menu' => true,
+            'menu_position' => 25,
+            'menu_icon'    => 'dashicons-format-quote',
+            'supports'     => array( 'title', 'editor' ),
+            'has_archive'  => false,
+            'rewrite'      => false,
+        )
+    );
+} );
+
+add_action( 'add_meta_boxes', function () {
+    add_meta_box(
+        'awa_testimonial_meta',
+        'Informations complémentaires',
+        'awa_testimonial_meta_box',
+        'awa_testimonial',
+        'normal',
+        'high'
+    );
+} );
+
+function awa_testimonial_meta_box( $post ) {
+    $city    = get_post_meta( $post->ID, 'awa_testimonial_city', true );
+    $initial = get_post_meta( $post->ID, 'awa_testimonial_initial', true );
+    $color   = get_post_meta( $post->ID, 'awa_testimonial_color', true );
+    wp_nonce_field( 'awa_testimonial_meta_save', 'awa_testimonial_meta_nonce' );
+    ?>
+    <p>
+        <label for="awa_testimonial_city">Ville :</label><br>
+        <input type="text" id="awa_testimonial_city" name="awa_testimonial_city" value="<?php echo esc_attr( $city ); ?>" style="width:100%;">
+    </p>
+    <p>
+        <label for="awa_testimonial_initial">Initiale (avatar) :</label><br>
+        <input type="text" id="awa_testimonial_initial" name="awa_testimonial_initial" value="<?php echo esc_attr( $initial ); ?>" style="width:100%;">
+    </p>
+    <p>
+        <label for="awa_testimonial_color">Couleur avatar (hex) :</label><br>
+        <input type="text" id="awa_testimonial_color" name="awa_testimonial_color" value="<?php echo esc_attr( $color ); ?>" style="width:100%;">
+    </p>
+    <?php
+}
+
+add_action( 'save_post', function ( $post_id ) {
+    if ( ! isset( $_POST['awa_testimonial_meta_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['awa_testimonial_meta_nonce'] ) ), 'awa_testimonial_meta_save' ) ) {
+        return;
+    }
+    if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+        return;
+    }
+    if ( ! current_user_can( 'edit_post', $post_id ) ) {
+        return;
+    }
+    if ( isset( $_POST['awa_testimonial_city'] ) ) {
+        update_post_meta( $post_id, 'awa_testimonial_city', sanitize_text_field( wp_unslash( $_POST['awa_testimonial_city'] ) ) );
+    }
+    if ( isset( $_POST['awa_testimonial_initial'] ) ) {
+        update_post_meta( $post_id, 'awa_testimonial_initial', sanitize_text_field( wp_unslash( $_POST['awa_testimonial_initial'] ) ) );
+    }
+    if ( isset( $_POST['awa_testimonial_color'] ) ) {
+        update_post_meta( $post_id, 'awa_testimonial_color', sanitize_text_field( wp_unslash( $_POST['awa_testimonial_color'] ) ) );
+    }
+} );
+
+/**
+ * Récupère les témoignages (CPT) ou fallback sur les 4 options existantes.
+ *
+ * @return array
+ */
+function awa_get_testimonials() {
+    $args = array(
+        'post_type'      => 'awa_testimonial',
+        'posts_per_page' => -1,
+        'post_status'    => 'publish',
+        'orderby'        => 'date',
+        'order'          => 'DESC',
+    );
+    $query = new WP_Query( $args );
+    $reviews = array();
+
+    if ( $query->have_posts() ) {
+        while ( $query->have_posts() ) {
+            $query->the_post();
+            $reviews[] = array(
+                'name'    => get_the_title(),
+                'city'    => get_post_meta( get_the_ID(), 'awa_testimonial_city', true ),
+                'text'    => apply_filters( 'the_content', get_the_content() ),
+                'initial' => get_post_meta( get_the_ID(), 'awa_testimonial_initial', true ),
+                'color'   => get_post_meta( get_the_ID(), 'awa_testimonial_color', true ),
+            );
+        }
+        wp_reset_postdata();
+        return $reviews;
+    }
+
+    return array(
+        array( 'name' => awa_opt( 'review_1_name', 'Aïssatou D.' ), 'city' => awa_opt( 'review_1_city', 'Dakar' ), 'text' => awa_opt( 'review_1_text', "Le jus de bissap est divin, un vrai retour aux saveurs de chez nous. Je ne peux plus m'en passer." ), 'initial' => awa_opt( 'review_1_initial', 'A' ), 'color' => awa_opt( 'review_1_color', '#b8112b' ) ),
+        array( 'name' => awa_opt( 'review_2_name', 'Marc L.' ), 'city' => awa_opt( 'review_2_city', 'Saly' ), 'text' => awa_opt( 'review_2_text', 'Le gingembre/ananas, ma routine du matin. Énergie garantie pour toute la journée.' ), 'initial' => awa_opt( 'review_2_initial', 'M' ), 'color' => awa_opt( 'review_2_color', '#c8851a' ) ),
+        array( 'name' => awa_opt( 'review_3_name', 'Fatou S.' ), 'city' => awa_opt( 'review_3_city', 'Thiès' ), 'text' => awa_opt( 'review_3_text', 'Livraison rapide, jus frais, packaging top. Mes enfants adorent le jus de mangue !' ), 'initial' => awa_opt( 'review_3_initial', 'F' ), 'color' => awa_opt( 'review_3_color', '#e07a1a' ) ),
+        array( 'name' => awa_opt( 'review_4_name', 'Khadija B.' ), 'city' => awa_opt( 'review_4_city', 'Dakar' ), 'text' => awa_opt( 'review_4_text', "Le soump m'a fait redécouvrir un goût d'enfance. Authentique et tellement bien fait." ), 'initial' => awa_opt( 'review_4_initial', 'K' ), 'color' => awa_opt( 'review_4_color', '#6b3a18' ) ),
+    );
+}
 
 /* Masquer éléments Storefront parasites */
 add_action(
@@ -881,5 +1177,52 @@ add_action(
                 update_option( 'page_on_front', $id );
             }
         }
+    }
+);
+
+/* ── Forcer le retour sur la fiche produit après ajout au panier ──
+ *
+ * Le message de confirmation doit obligatoirement rester sur la fiche
+ * produit, sous le bouton Ajouter au panier, et ne jamais s'afficher
+ * sur la page panier.
+ */
+add_filter(
+    'woocommerce_add_to_cart_redirect',
+    function ( $url ) {
+        if ( is_product() && get_the_ID() ) {
+            return get_permalink( get_the_ID() );
+        }
+        return $url;
+    }
+);
+
+/* ── Configuration SMTP optionnelle pour envoyer les e-mails ──
+ *
+ * XAMPP n'envoie pas d'e-mails tout seul. Pour activer l'envoi,
+ * définissez dans wp-config.php les constantes suivantes :
+ *
+ * define( 'AWA_SMTP_HOST', 'smtp.gmail.com' );
+ * define( 'AWA_SMTP_PORT', 587 );
+ * define( 'AWA_SMTP_USER', 'votre@email.com' );
+ * define( 'AWA_SMTP_PASS', 'votre_mot_de_passe' );
+ * define( 'AWA_SMTP_FROM', 'votre@email.com' );
+ * define( 'AWA_SMTP_FROM_NAME', 'AwA Bio Foods' );
+ * define( 'AWA_SMTP_SECURE', 'tls' ); // tls, ssl ou vide
+ */
+add_action(
+    'phpmailer_init',
+    function ( $phpmailer ) {
+        if ( ! defined( 'AWA_SMTP_HOST' ) ) {
+            return;
+        }
+        $phpmailer->isSMTP();
+        $phpmailer->Host       = AWA_SMTP_HOST;
+        $phpmailer->Port       = defined( 'AWA_SMTP_PORT' ) ? (int) AWA_SMTP_PORT : 587;
+        $phpmailer->SMTPAuth   = true;
+        $phpmailer->Username   = defined( 'AWA_SMTP_USER' ) ? AWA_SMTP_USER : '';
+        $phpmailer->Password   = defined( 'AWA_SMTP_PASS' ) ? AWA_SMTP_PASS : '';
+        $phpmailer->From       = defined( 'AWA_SMTP_FROM' ) ? AWA_SMTP_FROM : ( defined( 'AWA_SMTP_USER' ) ? AWA_SMTP_USER : get_option( 'admin_email' ) );
+        $phpmailer->FromName   = defined( 'AWA_SMTP_FROM_NAME' ) ? AWA_SMTP_FROM_NAME : get_bloginfo( 'name' );
+        $phpmailer->SMTPSecure = defined( 'AWA_SMTP_SECURE' ) ? AWA_SMTP_SECURE : 'tls';
     }
 );

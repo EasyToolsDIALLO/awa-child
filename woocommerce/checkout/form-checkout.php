@@ -13,7 +13,7 @@ remove_action( 'woocommerce_before_checkout_form', 'woocommerce_checkout_coupon_
 add_filter(
     'woocommerce_checkout_fields',
     function ( $fields ) {
-        $hidden = array( 'billing_email', 'billing_country', 'billing_postcode', 'billing_state', 'billing_company', 'billing_address_2' );
+        $hidden = array( 'billing_country', 'billing_state', 'billing_company', 'billing_address_2' );
 
         foreach ( $hidden as $key ) {
             if ( ! isset( $fields['billing'][ $key ] ) ) {
@@ -39,6 +39,14 @@ add_filter(
             $fields['billing']['billing_last_name']['class']    = array( 'form-row-last' );
         }
 
+        if ( isset( $fields['billing']['billing_email'] ) ) {
+            $fields['billing']['billing_email']['label']       = __( 'E-mail', 'awa-child' );
+            $fields['billing']['billing_email']['priority']    = 25;
+            $fields['billing']['billing_email']['required']    = true;
+            $fields['billing']['billing_email']['class']       = array( 'form-row-wide' );
+            $fields['billing']['billing_email']['placeholder'] = 'votre@email.com';
+        }
+
         if ( isset( $fields['billing']['billing_phone'] ) ) {
             $fields['billing']['billing_phone']['label']       = __( 'Téléphone', 'awa-child' );
             $fields['billing']['billing_phone']['priority']    = 30;
@@ -52,6 +60,14 @@ add_filter(
             $fields['billing']['billing_address_1']['priority']    = 40;
             $fields['billing']['billing_address_1']['class']       = array( 'form-row-wide' );
             $fields['billing']['billing_address_1']['placeholder'] = __( 'Rue, quartier, point de repère…', 'awa-child' );
+        }
+
+        if ( isset( $fields['billing']['billing_postcode'] ) ) {
+            $fields['billing']['billing_postcode']['label']       = __( 'Code postal', 'awa-child' );
+            $fields['billing']['billing_postcode']['priority']    = 45;
+            $fields['billing']['billing_postcode']['required']    = true;
+            $fields['billing']['billing_postcode']['class']       = array( 'form-row-wide' );
+            $fields['billing']['billing_postcode']['placeholder'] = '10000';
         }
 
         if ( isset( $fields['billing']['billing_city'] ) ) {
@@ -78,11 +94,6 @@ add_filter(
 add_filter(
     'woocommerce_checkout_posted_data',
     function ( $data ) {
-        if ( empty( $data['billing_email'] ) && ! empty( $data['billing_phone'] ) ) {
-            $phone                 = preg_replace( '/\D+/', '', $data['billing_phone'] );
-            $data['billing_email'] = $phone . '@no-reply.awabio.com';
-        }
-
         if ( empty( $data['billing_country'] ) ) {
             $data['billing_country'] = 'SN';
         }

@@ -8,6 +8,8 @@
 $awa_home     = home_url( '/' );
 $awa_shop_url = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'shop' ) : home_url( '/#produits' );
 $awa_logo_url = awa_lovable_asset_url( '1ac4f2f0-5bc5-49cc-8e92-a516c0212208', 'logo.png' );
+$awa_custom_logo_id  = get_theme_mod( 'custom_logo' );
+$awa_custom_logo_img = $awa_custom_logo_id ? wp_get_attachment_image( $awa_custom_logo_id, 'full', false, array( 'class' => 'awa-footer__logo-img' ) ) : '';
 ?>
 
         </div><!-- .col-full -->
@@ -17,8 +19,12 @@ $awa_logo_url = awa_lovable_asset_url( '1ac4f2f0-5bc5-49cc-8e92-a516c0212208', '
         <div class="awa-container awa-footer__grid">
             <div class="awa-footer__brand">
                 <div class="awa-footer__logo-row">
-                    <img src="<?php echo esc_url( $awa_logo_url ); ?>" alt="AwA Bio Foods" class="awa-footer__logo-img" width="36" height="36">
-                    <span class="awa-footer__logo-text">AwA Bio Foods</span>
+                    <?php if ( $awa_custom_logo_img ) : ?>
+                        <?php echo $awa_custom_logo_img; ?>
+                    <?php else : ?>
+                        <img src="<?php echo esc_url( $awa_logo_url ); ?>" alt="AwA Bio Foods" class="awa-footer__logo-img" width="36" height="36">
+                        <span class="awa-footer__logo-text">AwA Bio Foods</span>
+                    <?php endif; ?>
                 </div>
                 <p class="awa-footer__desc">
                     Des jus 100% naturels, pressés au Sénégal à partir de fruits et plantes certifiés bio.

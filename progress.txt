@@ -1,0 +1,82 @@
+Liste des tâches ayant permis la création du thème AwA Child
+Reconstituée le 28/06/2026 à partir de l'état actuel du thème.
+
+1. FONDATION DU THÈME ENFANT
+   - Créer style.css (Template: storefront) avec en-tête AwA Child v2.0
+   - Définir les design tokens CSS : couleurs OKLCH, polices Fraunces / Plus Jakarta Sans, radius, container
+   - Ajouter le reset CSS et la base typographique
+   - Désactiver le layout natif Storefront (col-full, header/footer, breadcrumbs)
+   - Créer functions.php et le wrapper ABSPATH
+
+2. EN-TÊTE ET NAVIGATION
+   - Créer header.php avec header sticky, blur au scroll, logo, nav desktop, icônes compte/panier
+   - Implémenter le compteur de panier dans le header
+   - Ajouter la barre de navigation mobile (tabbar) : Accueil / Catalogue / Bienfaits / Avis / Contact
+   - Créer la modal compte client pour visiteurs non connectés (footer + form-login natif WC)
+   - Créer inc/account-modal.js pour les onglets connexion / inscription
+
+3. PAGE D'ACCUEIL (front-page.php)
+   - Construire le hero dynamique avec carousel produits WooCommerce et fallback Lovable
+   - Gérer les palettes de couleurs par produit dans le hero
+   - Ajouter la marquee défilante (arguments marketing)
+   - Créer la section des 3 gammes avec images et couleurs dynamiques
+   - Créer la section Best sellers (4 produits les plus vendus + image lifestyle)
+   - Créer la section Bienfaits (4 cartes modifiables)
+   - Créer la section Témoignages (4 avis clients modifiables)
+   - Intégrer la vidéo fondatrice locale
+   - Créer la section Engagement (mission, vision, valeurs)
+   - Ajouter les CTA et liens WhatsApp
+
+4. PANNEAU D'ADMINISTRATION
+   - Créer inc/homepage-options.php : page Apparence → Contenu Accueil
+   - Lister tous les champs modifiables (textes, images, vidéo, avis, bienfaits, distinctions, engagement)
+   - Implémenter la sauvegarde sécurisée avec nonce et capabilities
+   - Créer inc/homepage-options.js pour les onglets du formulaire admin
+   - Intégrer le sélecteur de médias WordPress pour les images
+
+5. WOOCCOMMERCE — CATALOGUE ET PRODUITS
+   - Créer woocommerce/single-product.php (fiche produit custom)
+   - Ajouter les palettes de couleurs par slug produit
+   - Gérer les contenus par défaut : tagline, description, bienfaits, ingrédients
+   - Créer woocommerce/archive-product.php (catalogue avec recherche et filtres catégories)
+   - Personnaliser l'affichage des cartes produit (format, prix, couleur)
+   - Gérer les produits liés et les fallbacks
+
+6. WOOCCOMMERCE — PANIER ET COMMANDE
+   - Créer woocommerce/cart/cart.php (redesign complet du panier)
+   - Créer woocommerce/cart/cart-totals.php
+   - Masquer les boutons natifs inutiles et appliquer le style AwA
+   - Créer woocommerce/checkout/form-checkout.php (formulaire simplifié, Sénégal par défaut)
+   - Créer woocommerce/checkout/thankyou.php (page de remerciement redesignée)
+
+7. LOGIQUE ET UTILITAIRES PHP
+   - Ajouter la fonction awa_opt() pour lire les options avec fallback
+   - Créer awa_get_product_palette() pour associer une couleur à chaque saveur
+   - Créer awa_get_product_content_defaults() pour les contenus par défaut
+   - Créer awa_get_product_format() pour récupérer l'attribut Format
+   - Créer awa_lovable_asset_url() pour les assets distants
+   - Créer awa_theme_asset() pour les assets locaux
+   - Forcer les templates WooCommerce classiques via le filtre the_content
+   - Supprimer la sidebar Storefront sur la page Mon Compte
+
+8. STYLES ET INTERACTIONS
+   - Rédiger le style.css complet (~116 Ko) couvrant toutes les sections
+   - Ajouter les media queries mobile
+   - Créer/inc/account-modal.js pour la gestion de la modal compte
+   - Créer inc/homepage-options.js pour les onglets admin
+
+Fichiers principaux du thème :
+- style.css
+- functions.php
+- header.php
+- footer.php
+- front-page.php
+- inc/homepage-options.php
+- inc/homepage-options.js
+- inc/account-modal.js
+- woocommerce/single-product.php
+- woocommerce/archive-product.php
+- woocommerce/cart/cart.php
+- woocommerce/cart/cart-totals.php
+- woocommerce/checkout/form-checkout.php
+- woocommerce/checkout/thankyou.php

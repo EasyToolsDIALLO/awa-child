@@ -70,10 +70,6 @@ $is_all_active  = is_shop() && ! is_product_category();
     ═══════════════════════════════════════════════════════ -->
     <section class="awa-catalog__body">
         <div class="awa-container">
-            <?php if ( function_exists( 'woocommerce_output_all_notices' ) ) {
-                woocommerce_output_all_notices();
-            } ?>
-
             <div class="awa-catalog__meta">
                 <span><?php printf( esc_html( _n( '%d produit', '%d produits', $visible_count, 'awa-child' ) ), $visible_count ); ?></span>
                 <span>Trié par popularité</span>

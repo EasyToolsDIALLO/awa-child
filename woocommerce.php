@@ -11,7 +11,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-if ( is_cart() || is_checkout() ) {
+if ( is_cart() || is_checkout() || is_account_page() ) {
 	/* ── Panier / commande / confirmation ──────────────────────────────
 	 * Rendu awa-child direct, sans wrappers Storefront (#primary, sidebar…)
 	 * Le filtre the_content dans functions.php injecte [woocommerce_cart]

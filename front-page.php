@@ -81,54 +81,61 @@ $total_products = count( $hero_slides );
 /* Gammes */
 $gammes = awa_get_gammes();
 
+/* ── Données dynamiques via options admin (Apparence → Contenu Accueil) ── */
+
 $benefits = array(
     array(
-        'title' => '100% Bio & local',
-        'text'  => 'Fruits cultivés au Sénégal, sans pesticides ni traitements chimiques.',
-        'image' => $img_benefit_bio,
+        'title' => awa_opt( 'benefit_1_title', '100% Bio & local' ),
+        'text'  => awa_opt( 'benefit_1_text', 'Fruits cultivés au Sénégal, sans pesticides ni traitements chimiques.' ),
+        'image' => awa_opt( 'benefit_1_image', $img_benefit_bio ),
         'icon'  => 'leaf',
     ),
     array(
-        'title' => 'Pressé à froid',
-        'text'  => 'Une méthode douce qui préserve vitamines, enzymes et saveurs.',
-        'image' => $img_benefit_press,
+        'title' => awa_opt( 'benefit_2_title', 'Pressé à froid' ),
+        'text'  => awa_opt( 'benefit_2_text', 'Une méthode douce qui préserve vitamines, enzymes et saveurs.' ),
+        'image' => awa_opt( 'benefit_2_image', $img_benefit_press ),
         'icon'  => 'sparkles',
     ),
     array(
-        'title' => 'Bon pour le corps',
-        'text'  => 'Tonifiant, digestif, antioxydant. Un rituel santé au quotidien.',
-        'image' => $img_benefit_body,
+        'title' => awa_opt( 'benefit_3_title', 'Bon pour le corps' ),
+        'text'  => awa_opt( 'benefit_3_text', 'Tonifiant, digestif, antioxydant. Un rituel santé au quotidien.' ),
+        'image' => awa_opt( 'benefit_3_image', $img_benefit_body ),
         'icon'  => 'heart',
     ),
     array(
-        'title' => 'Zéro additif',
-        'text'  => 'Aucun conservateur, ni colorant, ni arôme. Juste le fruit, rien d\'autre.',
-        'image' => $img_benefit_pure,
+        'title' => awa_opt( 'benefit_4_title', 'Zéro additif' ),
+        'text'  => awa_opt( 'benefit_4_text', "Aucun conservateur, ni colorant, ni arôme. Juste le fruit, rien d'autre." ),
+        'image' => awa_opt( 'benefit_4_image', $img_benefit_pure ),
         'icon'  => 'shield',
     ),
 );
 
-$reviews = array(
-    array( 'name' => 'Aïssatou D.', 'city' => 'Dakar', 'text' => 'Le jus de bissap est divin, un vrai retour aux saveurs de chez nous. Je ne peux plus m\'en passer.', 'initial' => 'A', 'color' => '#b8112b' ),
-    array( 'name' => 'Marc L.', 'city' => 'Saly', 'text' => 'Le gingembre/ananas, ma routine du matin. Énergie garantie pour toute la journée.', 'initial' => 'M', 'color' => '#c8851a' ),
-    array( 'name' => 'Fatou S.', 'city' => 'Thiès', 'text' => 'Livraison rapide, jus frais, packaging top. Mes enfants adorent le jus de mangue !', 'initial' => 'F', 'color' => '#e07a1a' ),
-    array( 'name' => 'Khadija B.', 'city' => 'Dakar', 'text' => 'Le soump m\'a fait redécouvrir un goût d\'enfance. Authentique et tellement bien fait.', 'initial' => 'K', 'color' => '#6b3a18' ),
-);
+$reviews = awa_get_testimonials();
 
-$marquee_items = array( 'Sans conservateurs', 'Sans additifs', 'Sans colorants', 'Sans arômes', 'Pressé à froid', '100% Bio' );
+$marquee_raw   = awa_opt( 'marquee_items', "Sans conservateurs\nSans additifs\nSans colorants\nSans arômes\nPressé à froid\n100% Bio" );
+$marquee_items = array_filter( array_map( 'trim', preg_split( '/\r\n|\r|\n/', $marquee_raw ) ) );
 
 $awards = array(
-    array( 'icon' => 'trophy', 'title' => '2e Prix Meilleur produit Made in Sénégal', 'sub' => 'Jus Moringa · 2026' ),
-    array( 'icon' => 'award', 'title' => 'Meilleure Entrepreneure', 'sub' => '4× lauréate · 2022, 2024, 2026' ),
-    array( 'icon' => 'shield', 'title' => 'Supervision QHSE', 'sub' => '15 ans d\'expérience industrielle' ),
-    array( 'icon' => 'heart', 'title' => '91% de satisfaction client', 'sub' => 'Avis vérifiés · 2024-2026' ),
+    array( 'icon' => 'trophy', 'title' => awa_opt( 'award_1_title', '2e Prix Meilleur produit Made in Sénégal' ), 'sub' => awa_opt( 'award_1_sub', 'Jus Moringa · 2026' ) ),
+    array( 'icon' => 'award',  'title' => awa_opt( 'award_2_title', 'Meilleure Entrepreneure' ), 'sub' => awa_opt( 'award_2_sub', '4× lauréate · 2022, 2024, 2026' ) ),
+    array( 'icon' => 'shield', 'title' => awa_opt( 'award_3_title', 'Supervision QHSE' ), 'sub' => awa_opt( 'award_3_sub', "15 ans d'expérience industrielle" ) ),
+    array( 'icon' => 'heart',  'title' => awa_opt( 'award_4_title', '91% de satisfaction client' ), 'sub' => awa_opt( 'award_4_sub', 'Avis vérifiés · 2024-2026' ) ),
 );
 
 $engagement = array(
-    array( 'icon' => 'target', 'label' => 'Mission', 'text' => 'Rendre accessibles des jus naturels et biologiques à base d\'ingrédients locaux, pour une meilleure santé et longévité.' ),
-    array( 'icon' => 'eye', 'label' => 'Vision', 'text' => 'Devenir d\'ici 10 ans une marque leader des boissons naturelles en Afrique, reconnue pour son impact et son innovation.' ),
-    array( 'icon' => 'hand-heart', 'label' => 'Valeurs', 'text' => 'Satisfaction client, intégrité, respect de l\'environnement, responsabilité sociale, humanité et impact positif.' ),
+    array( 'icon' => 'target',     'label' => awa_opt( 'engagement_mission_label', 'Mission' ), 'text' => awa_opt( 'engagement_mission_text', "Rendre accessibles des jus naturels et biologiques à base d'ingrédients locaux, pour une meilleure santé et longévité." ) ),
+    array( 'icon' => 'eye',        'label' => awa_opt( 'engagement_vision_label', 'Vision' ),   'text' => awa_opt( 'engagement_vision_text', "Devenir d'ici 10 ans une marque leader des boissons naturelles en Afrique, reconnue pour son impact et son innovation." ) ),
+    array( 'icon' => 'hand-heart', 'label' => awa_opt( 'engagement_values_label', 'Valeurs' ),  'text' => awa_opt( 'engagement_values_text', "Satisfaction client, intégrité, respect de l'environnement, responsabilité sociale, humanité et impact positif." ) ),
 );
+
+/* Image lifestyle best sellers */
+$img_woman_juice_opt = awa_opt( 'bs_image', '' );
+if ( $img_woman_juice_opt ) {
+    $img_woman_juice = $img_woman_juice_opt;
+}
+
+/* Vidéo fondatrice */
+$founder_video = awa_opt( 'founder_video', $hero_video_url );
 ?>
 
 <main id="awa-home" class="awa-home">
@@ -151,27 +158,27 @@ $engagement = array(
             <div class="awa-hero__content">
                 <span class="awa-hero__badge">
                     <svg class="awa-hero__badge-icon" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>
-                    Certifiés bio · Sénégal
+                    <?php echo esc_html( awa_opt( 'hero_badge', 'Certifiés bio · Sénégal' ) ); ?>
                 </span>
                 <h1 class="awa-hero__title">
-                    La nature,<br>
+                    <?php echo esc_html( awa_opt( 'hero_title_1', 'La nature,' ) ); ?><br>
                     <em class="awa-hero__word" style="color: <?php echo esc_attr( $hero_first['accent'] ); ?>;"><?php echo esc_html( mb_strtolower( $hero_first['name'] ) ); ?></em><br>
-                    embouteillée.
+                    <?php echo esc_html( awa_opt( 'hero_title_3', 'embouteillée.' ) ); ?>
                 </h1>
                 <p class="awa-hero__sub">
-                    Pressés à froid, livrés frais. Aucun conservateur, juste la promesse d'un fruit cueilli ce matin.
+                    <?php echo esc_html( awa_opt( 'hero_sub', "Pressés à froid, livrés frais. Aucun conservateur, juste la promesse d'un fruit cueilli ce matin." ) ); ?>
                 </p>
                 <div class="awa-hero__btns">
                     <a href="#produits" class="awa-btn awa-btn--dark">
-                        Commander maintenant
+                        <?php echo esc_html( awa_opt( 'hero_cta1', 'Commander maintenant' ) ); ?>
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
                     </a>
-                    <a href="#histoire" class="awa-btn awa-btn--outline">Notre histoire</a>
+                    <a href="#histoire" class="awa-btn awa-btn--outline"><?php echo esc_html( awa_opt( 'hero_cta2', 'Notre histoire' ) ); ?></a>
                 </div>
                 <div class="awa-hero__stats">
                     <div class="awa-stat"><span class="awa-stat__num"><?php echo esc_html( $total_products ); ?></span><span class="awa-stat__lbl">recettes</span></div>
-                    <div class="awa-stat"><span class="awa-stat__num">3</span><span class="awa-stat__lbl">gammes</span></div>
-                    <div class="awa-stat"><span class="awa-stat__num">0</span><span class="awa-stat__lbl">additif</span></div>
+                    <div class="awa-stat"><span class="awa-stat__num"><?php echo esc_html( awa_opt( 'hero_stat_gammes', '3' ) ); ?></span><span class="awa-stat__lbl">gammes</span></div>
+                    <div class="awa-stat"><span class="awa-stat__num"><?php echo esc_html( awa_opt( 'hero_stat_additif', '0' ) ); ?></span><span class="awa-stat__lbl">additif</span></div>
                 </div>
             </div>
 
@@ -223,9 +230,9 @@ $engagement = array(
     ═══════════════════════════════════════════════════════ -->
     <section class="awa-gammes" id="gammes">
         <div class="awa-container">
-            <p class="awa-label">3 gammes, 1 philosophie</p>
-            <h2 class="awa-gammes__title">Choisissez la gamme<br><em>qui vous ressemble.</em></h2>
-            <p class="awa-gammes__intro">Mêmes jus pressés à froid, trois écrins pour trois moments de vie.</p>
+            <p class="awa-label"><?php echo esc_html( awa_opt( 'gammes_label', '3 gammes, 1 philosophie' ) ); ?></p>
+            <h2 class="awa-gammes__title"><?php echo esc_html( awa_opt( 'gammes_title', 'Choisissez la gamme qui vous ressemble.' ) ); ?></h2>
+            <p class="awa-gammes__intro"><?php echo esc_html( awa_opt( 'gammes_intro', 'Mêmes jus pressés à froid, trois écrins pour trois moments de vie.' ) ); ?></p>
 
             <div class="awa-gammes__grid">
                 <?php foreach ( $gammes as $g ) : ?>
@@ -265,16 +272,16 @@ $engagement = array(
                     <img src="<?php echo esc_url( $img_woman_juice ); ?>" alt="Femme savourant un jus AwA Bio Foods" loading="lazy">
                     <div class="awa-bestsellers__image-badge">
                         <div class="awa-bestsellers__stars" aria-hidden="true">★★★★★</div>
-                        <span>4.9/5 · 240+ avis</span>
-                        <p>« Une dose quotidienne de soleil sénégalais. »</p>
+                        <span><?php echo esc_html( awa_opt( 'bs_rating', '4.9/5 · 240+ avis' ) ); ?></span>
+                        <p><?php echo esc_html( awa_opt( 'bs_quote', '« Une dose quotidienne de soleil sénégalais. »' ) ); ?></p>
                     </div>
                 </div>
 
                 <!-- Best sellers list -->
                 <div class="awa-bestsellers__content">
-                    <p class="awa-label">★ Best sellers</p>
-                    <h2 class="awa-bestsellers__title">Les chouchous<br><em>de nos clients.</em></h2>
-                    <p class="awa-bestsellers__sub">Quatre recettes plébiscitées, pressées à froid, à savourer fraîches du jour.</p>
+                    <p class="awa-label"><?php echo esc_html( awa_opt( 'bs_label', '★ Best sellers' ) ); ?></p>
+                    <h2 class="awa-bestsellers__title"><?php echo esc_html( awa_opt( 'bs_title', 'Les chouchous de nos clients.' ) ); ?></h2>
+                    <p class="awa-bestsellers__sub"><?php echo esc_html( awa_opt( 'bs_sub', 'Quatre recettes plébiscitées, pressées à froid, à savourer fraîches du jour.' ) ); ?></p>
 
                     <div class="awa-bestsellers__grid">
                         <?php
@@ -326,7 +333,7 @@ $engagement = array(
                     </div>
 
                     <a href="<?php echo esc_url( $shop_url ); ?>" class="awa-btn awa-btn--dark" style="margin-top: 1.25rem;">
-                        Voir tout le catalogue
+                        <?php echo esc_html( awa_opt( 'bs_cta', 'Voir tout le catalogue' ) ); ?>
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
                     </a>
                 </div>
@@ -341,9 +348,9 @@ $engagement = array(
         <div class="awa-container">
             <div class="awa-products__head">
                 <div>
-                    <p class="awa-label">Boutique</p>
-                    <h2 class="awa-products__title">Nos jus à commander.</h2>
-                    <p class="awa-products__sub">Livrés frais en 1h à Dakar · 48h en régions.</p>
+                    <p class="awa-label"><?php echo esc_html( awa_opt( 'products_label', 'Boutique' ) ); ?></p>
+                    <h2 class="awa-products__title"><?php echo esc_html( awa_opt( 'products_title', 'Nos jus à commander.' ) ); ?></h2>
+                    <p class="awa-products__sub"><?php echo esc_html( awa_opt( 'products_sub', 'Livrés frais en 1h à Dakar · 48h en régions.' ) ); ?></p>
                 </div>
                 <div class="awa-products__controls">
                     <div class="awa-format-toggle" id="awa-format-toggle">
@@ -475,8 +482,8 @@ $engagement = array(
     ═══════════════════════════════════════════════════════ -->
     <section class="awa-benefits" id="bienfaits">
         <div class="awa-container">
-            <p class="awa-label">Bienfaits</p>
-            <h2 class="awa-benefits__title">Pourquoi vous allez<br><em>les adorer.</em></h2>
+            <p class="awa-label"><?php echo esc_html( awa_opt( 'benefits_label', 'Bienfaits' ) ); ?></p>
+            <h2 class="awa-benefits__title"><?php echo esc_html( awa_opt( 'benefits_title_1', 'Pourquoi vous allez' ) ); ?><br><em><?php echo esc_html( awa_opt( 'benefits_title_2', 'les adorer.' ) ); ?></em></h2>
 
             <div class="awa-benefits__grid">
                 <?php foreach ( $benefits as $b ) : ?>
@@ -484,7 +491,6 @@ $engagement = array(
                         <div class="awa-benefit-card__img">
                             <img src="<?php echo esc_url( $b['image'] ); ?>" alt="<?php echo esc_attr( $b['title'] ); ?>" loading="lazy">
                         </div>
-                        <span class="awa-benefit-card__icon awa-benefit-card__icon--<?php echo esc_attr( $b['icon'] ); ?>" aria-hidden="true"></span>
                         <div class="awa-benefit-card__body">
                             <h3><?php echo esc_html( $b['title'] ); ?></h3>
                             <p><?php echo esc_html( $b['text'] ); ?></p>
@@ -515,8 +521,8 @@ $engagement = array(
     ═══════════════════════════════════════════════════════ -->
     <section class="awa-awards" id="awards">
         <div class="awa-container">
-            <p class="awa-label">Reconnaissance</p>
-            <h2 class="awa-awards__title">Une qualité <em>primée.</em></h2>
+            <p class="awa-label"><?php echo esc_html( awa_opt( 'awards_label', 'Reconnaissance' ) ); ?></p>
+            <h2 class="awa-awards__title"><?php echo esc_html( awa_opt( 'awards_title', 'Une qualité primée.' ) ); ?></h2>
 
             <div class="awa-awards__grid">
                 <?php foreach ( $awards as $a ) : ?>
@@ -545,28 +551,31 @@ $engagement = array(
     ═══════════════════════════════════════════════════════ -->
     <section class="awa-reviews" id="temoignages">
         <div class="awa-container">
-            <p class="awa-label">Témoignages</p>
-            <h2 class="awa-reviews__title">Ils en redemandent.</h2>
+            <p class="awa-label"><?php echo esc_html( awa_opt( 'reviews_label', 'Témoignages' ) ); ?></p>
+            <h2 class="awa-reviews__title"><?php echo esc_html( awa_opt( 'reviews_title', 'Ils en redemandent.' ) ); ?></h2>
             <div class="awa-reviews__rating">
                 <span class="awa-reviews__stars" aria-hidden="true">★★★★★</span>
-                <span><strong>4.9/5</strong> · 240+ avis vérifiés</span>
+                <span><?php echo esc_html( awa_opt( 'reviews_rating', '4.9/5 · 240+ avis vérifiés' ) ); ?></span>
             </div>
 
-            <div class="awa-reviews__grid">
-                <?php foreach ( $reviews as $r ) : ?>
-                    <article class="awa-review-card">
-                        <span class="awa-review-card__quote" aria-hidden="true">"</span>
-                        <div class="awa-review-card__stars" aria-hidden="true">★★★★★</div>
-                        <p class="awa-review-card__text">« <?php echo esc_html( $r['text'] ); ?> »</p>
-                        <div class="awa-review-card__author">
-                            <span class="awa-review-card__avatar" style="background-color: <?php echo esc_attr( $r['color'] ); ?>;"><?php echo esc_html( $r['initial'] ); ?></span>
-                            <div>
-                                <strong><?php echo esc_html( $r['name'] ); ?></strong>
-                                <small><?php echo esc_html( $r['city'] ); ?> · Client vérifié</small>
+            <div class="awa-reviews__slider" data-autoplay="true" data-delay="4000">
+                <div class="awa-reviews__track">
+                    <?php foreach ( $reviews as $r ) : ?>
+                        <article class="awa-review-card">
+                            <span class="awa-review-card__quote" aria-hidden="true">"</span>
+                            <div class="awa-review-card__stars" aria-hidden="true">★★★★★</div>
+                            <p class="awa-review-card__text">« <?php echo esc_html( wp_strip_all_tags( $r['text'] ) ); ?> »</p>
+                            <div class="awa-review-card__author">
+                                <span class="awa-review-card__avatar" style="background-color: <?php echo esc_attr( $r['color'] ); ?>;"><?php echo esc_html( $r['initial'] ); ?></span>
+                                <div>
+                                    <strong><?php echo esc_html( $r['name'] ); ?></strong>
+                                    <small><?php echo esc_html( $r['city'] ); ?> · Client vérifié</small>
+                                </div>
                             </div>
-                        </div>
-                    </article>
-                <?php endforeach; ?>
+                        </article>
+                    <?php endforeach; ?>
+                </div>
+                <div class="awa-reviews__dots" aria-label="Navigation du slider"></div>
             </div>
         </div>
     </section>
@@ -577,7 +586,7 @@ $engagement = array(
     <section class="awa-founder" id="histoire">
         <div class="awa-container awa-founder__inner">
             <div class="awa-founder__media" id="awa-founder-media">
-                <video class="awa-founder__video" id="awa-founder-video" src="<?php echo esc_url( $hero_video_url ); ?>" autoplay loop muted playsinline></video>
+                <video class="awa-founder__video" id="awa-founder-video" src="<?php echo esc_url( $founder_video ); ?>" autoplay loop muted playsinline></video>
                 <div class="awa-founder__overlay"></div>
                 <span class="awa-founder__label">La fondatrice</span>
                 <button type="button" class="awa-founder__sound-hint" id="awa-founder-sound-hint" aria-label="Activer le son">
@@ -598,25 +607,25 @@ $engagement = array(
                     </button>
                 </div>
                 <div class="awa-founder__quote-bottom">
-                    <p>« Le naturel n'est pas une option, c'est une nécessité. »</p>
-                    <small>Awa Mbengue · Fondatrice & Ingénieure QHSE</small>
+                    <p><?php echo esc_html( awa_opt( 'founder_quote', "« Le naturel n'est pas une option, c'est une nécessité. »" ) ); ?></p>
+                    <small><?php echo esc_html( awa_opt( 'founder_name', 'Awa Mbengue · Fondatrice & Ingénieure QHSE' ) ); ?></small>
                 </div>
             </div>
 
             <div class="awa-founder__text">
-                <p class="awa-label">Mot de la fondatrice</p>
-                <h2 class="awa-founder__title">Tout a commencé par<br><em>une histoire simple.</em></h2>
+                <p class="awa-label"><?php echo esc_html( awa_opt( 'founder_label', 'Mot de la fondatrice' ) ); ?></p>
+                <h2 class="awa-founder__title"><?php echo esc_html( awa_opt( 'founder_title', 'Tout a commencé par' ) ); ?><br><em><?php echo esc_html( awa_opt( 'founder_title_em', 'une histoire simple.' ) ); ?></em></h2>
                 <div class="awa-founder__desc">
-                    <p>Je me souviens encore des saveurs simples et authentiques de mon enfance. Avec ma mère, j'ai appris très tôt que bien manger, ce n'était pas seulement se nourrir… c'était se préserver.</p>
-                    <p>Un soir de mi-Sha'ban, le 20 avril 2019, entourée de mes proches, j'ai pris une décision : créer une entreprise engagée, porteuse de sens. <strong>AwA Bio Foods venait de naître.</strong></p>
-                    <p class="awa-founder__desc--fade">Aujourd'hui, cette histoire continue. Avec vous.</p>
+                    <p><?php echo esc_html( awa_opt( 'founder_p1', "Je me souviens encore des saveurs simples et authentiques de mon enfance. Avec ma mère, j'ai appris très tôt que bien manger, ce n'était pas seulement se nourrir… c'était se préserver." ) ); ?></p>
+                    <p><?php echo esc_html( awa_opt( 'founder_p2', "Un soir de mi-Sha'ban, le 20 avril 2019, entourée de mes proches, j'ai pris une décision : créer une entreprise engagée, porteuse de sens. AwA Bio Foods venait de naître." ) ); ?></p>
+                    <p class="awa-founder__desc--fade"><?php echo esc_html( awa_opt( 'founder_p3', "Aujourd'hui, cette histoire continue. Avec vous." ) ); ?></p>
                 </div>
                 <div class="awa-founder__btns">
                     <a href="<?php echo esc_url( $shop_url ); ?>" class="awa-btn awa-btn--primary">
-                        Découvrir nos jus
+                        <?php echo esc_html( awa_opt( 'founder_cta1', 'Découvrir nos jus' ) ); ?>
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
                     </a>
-                    <a href="https://wa.me/221783793197" target="_blank" rel="noopener noreferrer" class="awa-btn awa-btn--outline">Échanger sur WhatsApp</a>
+                    <a href="<?php echo esc_url( awa_opt( 'founder_cta2_url', 'https://wa.me/221783793197' ) ); ?>" target="_blank" rel="noopener noreferrer" class="awa-btn awa-btn--outline"><?php echo esc_html( awa_opt( 'founder_cta2', 'Échanger sur WhatsApp' ) ); ?></a>
                 </div>
             </div>
         </div>
@@ -627,8 +636,8 @@ $engagement = array(
     ═══════════════════════════════════════════════════════ -->
     <section class="awa-engagement" id="engagement">
         <div class="awa-container">
-            <p class="awa-label">Notre engagement</p>
-            <h2 class="awa-engagement__title">Ce qui nous <em>guide.</em></h2>
+            <p class="awa-label"><?php echo esc_html( awa_opt( 'engagement_label', 'Notre engagement' ) ); ?></p>
+            <h2 class="awa-engagement__title"><?php echo esc_html( awa_opt( 'engagement_title', 'Ce qui nous guide.' ) ); ?></h2>
 
             <div class="awa-engagement__grid">
                 <?php foreach ( $engagement as $e ) : ?>
